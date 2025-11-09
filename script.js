@@ -12,6 +12,7 @@ const output = document.getElementById('output');
 output.textContent = 0;
 
 let currentNumber = 0;
+let currentOperator = ''; 
 //OUTPUT
 
 //BUTTONS
