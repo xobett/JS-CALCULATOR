@@ -1,8 +1,5 @@
-function operate(firstNumber, operand, secondNumber){
+function operate(operand, firstNumber, secondNumber){
 
-    // switch (operand) {
-
-    // }
 }
 
 //OUTPUT
@@ -12,6 +9,7 @@ const output = document.getElementById('output');
 output.textContent = 0;
 
 let currentNumber = 0;
+let secondNumber = 0;
 let currentOperator = ''; 
 //OUTPUT
 
@@ -39,6 +37,7 @@ function setAction(e){
             else {
                 output.textContent += value;
             }
+
             currentNumber = output.textContent;
 
             digitsDisplayed += value == '00' ? 2 : 1;
@@ -68,11 +67,15 @@ function setAction(e){
                 break;
 
             case 'backspace':
-                
+                if (output.textContent.length <= 1) return;
+
+                let backspacedValue = output.textContent.split("").slice(0,-1).join("");
+                currentNumber = backspacedValue;
+                output.textContent = currentNumber;
                 break;
 
             case 'divide':
-                
+                operand = '/'
                 break;
 
             case 'clear-entry':
@@ -80,19 +83,19 @@ function setAction(e){
                 break;
 
             case 'times':
-                
+                operand = '*'
                 break;
 
             case 'all-clear':
                 firstNumber = 0;
+                operand = '';
 
-
-                output.textContent = '0';
                 currentNumber = 0;
+                output.textContent = '0';
                 break;
 
             case 'minus':
-                
+                operand = '-';
                 break;
 
             case 'decimal':
@@ -100,11 +103,12 @@ function setAction(e){
                 break;
 
             case 'equals':
-                //Call operate
+                currentNumber = operate(operand, firstNumber, secondNumber);
+                output.textContent = currentNumber;
                 break;
 
             case 'plus':
-                
+                operand = '+'
                 break;
         }
     }
