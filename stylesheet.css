@@ -41,10 +41,6 @@ body{
 
 /*CENTRAL CONTAINER*/
 
-.central-container > *{
-    /* border: 1px solid red; */
-}
-
 .central-container{
     flex-direction: column;
     

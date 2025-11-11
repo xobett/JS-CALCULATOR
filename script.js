@@ -1,5 +1,14 @@
+const { memo } = require("react");
+
 function operate(operand, firstNumber, secondNumber){
 
+    switch(operand) {
+        case '+': return firstNumber + secondNumber;
+        case '-': return firstNumber - secondNumber;
+        case '/': return firstNumber / secondNumber;
+        case '*': return firstNumber * secondNumber;
+        case '%': return firstNumber * (secondNumber / 100); 
+    }
 }
 
 //OUTPUT
@@ -11,6 +20,8 @@ output.textContent = 0;
 let currentNumber = 0;
 let secondNumber = 0;
 let currentOperator = ''; 
+
+let memory = 0;
 //OUTPUT
 
 //BUTTONS
@@ -45,6 +56,7 @@ function setAction(e){
             console.log(currentNumber);
     }
     else if (type == 'operand'){
+        firstNumber = Number(output.textContent);
         switch (value) {
             case 'memory-plus':
                 
@@ -54,8 +66,9 @@ function setAction(e){
                 
                 break;
 
-            case 'memory-percentage':
-                
+            case 'memory-recall':
+                currentNumber = memory;
+                output.textContent = currentNumber;
                 break;
 
             case 'square-root':
@@ -63,7 +76,7 @@ function setAction(e){
                 break;
 
             case 'percentage':
-                
+                operand = '%';
                 break;
 
             case 'backspace':
@@ -79,7 +92,8 @@ function setAction(e){
                 break;
 
             case 'clear-entry':
-                //Reset current entry but keep previous operation (firstNumber)!!
+                currentNumber = 0;
+                output.textContent = '0';
                 break;
 
             case 'times':
@@ -95,6 +109,13 @@ function setAction(e){
                 break;
 
             case 'minus':
+
+                if (output.textContent == 0){
+                    firstNumber
+                    output.textContent = '-';
+                    return;
+                }
+
                 operand = '-';
                 break;
 
@@ -103,6 +124,7 @@ function setAction(e){
                 break;
 
             case 'equals':
+
                 currentNumber = operate(operand, firstNumber, secondNumber);
                 output.textContent = currentNumber;
                 break;
