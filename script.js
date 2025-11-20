@@ -23,8 +23,10 @@ function setAction(e) {
     switch (type){
         case 'digit': updateOutput(value); break;
         case 'operand': setNewOperand(value); break;
+        case 'fn': setFn(value); break;
     }
 }
+
 
 
 //#region FUNCTIONS
@@ -43,6 +45,16 @@ function operate(operand, firstNumber, secondNumber){
     }
 }
 
+function setFn(value){
+    switch (value) {
+        case 'memory-plus': return 0; 
+        case 'memory-minus': return 0; 
+        case 'memory-recall': return 0; 
+        case 'clear-entry': return ; 
+        case 'all-clear': return fn_allClear(); 
+    }
+}
+
 function updateOutput(value){
     output.textContent += value;
 }
@@ -52,9 +64,37 @@ function setNewOperand(value){
     operand = value;
 }
 
-
-function resetOutputValue(value) {
-    output.textContent = value;
+function resetOutputValue() {
+    output.textContent = 0;
 }
+
+//#region FN
+
+function fn_allClear(){
+    firstNumber = 0;
+    operand = '';
+    secondNumber = 0;
+
+    resetOutputValue();
+}
+
+function fn_clearEntry(){
+
+    resetOutputValue();
+}
+
+function fn_memoryPlus(){
+
+}
+
+function fn_memoryMinus(){
+
+}
+
+function fn_memoryRecall(){
+
+}
+
+//#endregion
 
 //#endregion FUNCTIONS
