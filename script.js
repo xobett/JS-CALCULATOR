@@ -75,6 +75,7 @@ function updateOutput(value){
 
 function setNewOperand(value){
     firstNumber = Number(output.textContent);
+    isDisplayingUnmodified = true;
     operand = value;
 }
 
@@ -110,7 +111,7 @@ function fn_memoryRecall(){
 }
 
 function fn_equals(){
-    if (secondNumber == 0) return;
+    if (firstNumber == 0) return;
 
     output.textContent = operate(operand, firstNumber, secondNumber);
 }
