@@ -1,4 +1,3 @@
-//#region VARS
 
 const output = document.getElementById('output');
 output.textContent = 0;
@@ -9,26 +8,28 @@ let secondNumber = 0;
 
 let memory = 0;
 let isDisplayingUnmodified = false;
-//#endregion VARS
 
 const buttons = document.getElementsByClassName("button");
+
 for (let index = 0; index < buttons.length; index++) {
     const btn = buttons[index];
-    btn.addEventListener('click', setAction);
+    btn.addEventListener('click', setBtnAction);
 }
 
-function setAction(e) {
+//#region FUNCTIONS
+
+function setBtnAction(e) {
     const type = e.target.getAttribute('data-type');
     let value = e.target.getAttribute('data-value');
 
     switch (type){
         case 'digit': updateOutput(value); break;
-        case 'operand': setNewOperand(value); break;
+        case 'operand': setOperand(value); break;
         case 'fn': setFn(value); break;
     }
 }
 
-//#region FUNCTIONS
+//#region MAIN FUNCTIONS
 
 function operate(operand, firstNumber, secondNumber){
 
@@ -36,19 +37,19 @@ function operate(operand, firstNumber, secondNumber){
     secondNumber = Number(secondNumber);
 
     switch(operand) {
-    case '+': return firstNumber + secondNumber;
-    case '-': return firstNumber - secondNumber;
-    case '/': return firstNumber / secondNumber;
-    case '*': return firstNumber * secondNumber;
-    case '%': return firstNumber * (secondNumber / 100);
+    case 'plus': return firstNumber + secondNumber;
+    case 'minus': return firstNumber - secondNumber;
+    case 'divide': return firstNumber / secondNumber;
+    case 'times': return firstNumber * secondNumber;
+    case 'percentage': return firstNumber * (secondNumber / 100);
     }
 }
 
 function setFn(value){
-    firstNumber = output.textContent;
     isDisplayingUnmodified = true;
 
     switch (value) {
+        case 'square-root': return fn_squareRoot();
         case 'memory-plus': return fn_memoryPlus(); 
         case 'memory-minus': return fn_memoryMinus(); 
         case 'memory-recall': return fn_memoryRecall(); 
@@ -56,6 +57,15 @@ function setFn(value){
         case 'all-clear': return fn_allClear();
         case 'equals': return fn_equals();
     }
+}
+
+function setOperand(value){
+    handleNegativeInput();
+
+    firstNumber = Number(output.textContent);
+    isDisplayingUnmodified = true;
+    
+    operand = value;
 }
 
 function updateOutput(value){
@@ -73,37 +83,30 @@ function updateOutput(value){
     }
 }
 
-function setNewOperand(value){
-    firstNumber = Number(output.textContent);
-    isDisplayingUnmodified = true;
-    operand = value;
-}
-
-function resetOutputValue() {
-    output.textContent = 0;
-}
+//#endregion MAIN FUNCTIONS
 
 //#region FN
 
 function fn_allClear(){
     firstNumber = 0;
     operand = '';
-    secondNumber = 0;
     memory = 0;
-
-    resetOutputValue();
+    
+    output.textContent = 0;
 }
 
 function fn_clearEntry(){
-    resetOutputValue();
+    output.textContent = 0;
 }
 
 function fn_memoryPlus(){
-    memory = operate('+', memory, firstNumber);
+    const addedValue = Number(output.textContent);
+    memory = operate('plus', memory, addedValue);
 }
 
 function fn_memoryMinus(){
-    memory = operate('-', memory, firstNumber);
+    const substractedValue = Number(output.textContent);
+    memory = operate('minus', memory, substractedValue);
 }
 
 function fn_memoryRecall(){
@@ -112,10 +115,28 @@ function fn_memoryRecall(){
 
 function fn_equals(){
     if (firstNumber == 0) return;
+    secondNumber = Number(output.textContent);
 
-    output.textContent = operate(operand, firstNumber, secondNumber);
+    const result = operate(operand, firstNumber, secondNumber);
+    output.textContent = result;
+}
+
+function fn_squareRoot(){
+    const sqrt = Math.sqrt(Number(output.textContent));
+    output.textContent = sqrt;
 }
 
 //#endregion
+
+//#region HELPERS
+
+function handleNegativeInput(){
+    if (value == 'minus' && firstNumber == 0){
+        output.textContent = '-';
+        return;
+    }
+}
+
+//#endregion HELPERS
 
 //#endregion FUNCTIONS
