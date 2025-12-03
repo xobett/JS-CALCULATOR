@@ -32,9 +32,13 @@ function setBtnAction(e) {
 //#region MAIN FUNCTIONS
 
 function operate(operand, firstNumber, secondNumber){
-
     firstNumber = Number(firstNumber);
     secondNumber = Number(secondNumber);
+
+    if(firstNumber == 0 && secondNumber == 0 && operand == 'divide'){
+        output.textContent = 'Gotcha!';
+        return;
+    }
 
     switch(operand) {
     case 'plus': return firstNumber + secondNumber;
@@ -50,6 +54,7 @@ function setFn(value){
 
     switch (value) {
         case 'square-root': return fn_squareRoot();
+        case 'decimal': return fn_decimal();
         case 'memory-plus': return fn_memoryPlus(); 
         case 'memory-minus': return fn_memoryMinus(); 
         case 'memory-recall': return fn_memoryRecall(); 
@@ -60,12 +65,29 @@ function setFn(value){
 }
 
 function setOperand(value){
-    handleNegativeInput();
+    const currentNumber = Number(output.textContent);
 
-    firstNumber = Number(output.textContent);
+    if (value == 'minus' && currentNumber == 0){
+        output.textContent = '-';
+        return;
+    }
+
+    if (firstNumber == currentNumber && currentNumber != 0){
+        operator = value
+        return;
+    }
+
+    //If a operation was done previously, calculates it
+    if (firstNumber != 0){
+        firstNumber = operate(operator, firstNumber, currentNumber);
+    }
+    else{
+        firstNumber = currentNumber;
+        console.log(firstNumber);
+    }
+
     isDisplayingUnmodified = true;
-    
-    operand = value;
+    operator = value;
 }
 
 function updateOutput(value){
@@ -83,14 +105,18 @@ function updateOutput(value){
     }
 }
 
+function resetValues() {
+    firstNumber = 0;
+    operator = '';
+    memory = 0;
+}
+
 //#endregion MAIN FUNCTIONS
 
 //#region FN
 
 function fn_allClear(){
-    firstNumber = 0;
-    operand = '';
-    memory = 0;
+    resetValues();
     
     output.textContent = 0;
 }
@@ -114,10 +140,14 @@ function fn_memoryRecall(){
 }
 
 function fn_equals(){
-    if (firstNumber == 0) return;
+    if (operator == '') return;
+
     secondNumber = Number(output.textContent);
 
-    const result = operate(operand, firstNumber, secondNumber);
+    const result = operate(operator, firstNumber, secondNumber);
+    resetValues();
+
+    if (!result) return;
     output.textContent = result;
 }
 
@@ -126,17 +156,13 @@ function fn_squareRoot(){
     output.textContent = sqrt;
 }
 
-//#endregion
+function fn_decimal(){
+    if (output.textContent.includes('.')) return;
 
-//#region HELPERS
-
-function handleNegativeInput(){
-    if (value == 'minus' && firstNumber == 0){
-        output.textContent = '-';
-        return;
-    }
+    output.textContent += '.';
+    isDisplayingUnmodified = false;
 }
 
-//#endregion HELPERS
+//#endregion
 
 //#endregion FUNCTIONS
