@@ -9,24 +9,41 @@ let secondNumber = 0;
 let memory = 0;
 let isDisplayingUnmodified = false;
 
+const numericKeys = [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '+', '*', '-', '/', 'Enter', 'Backspace'];
 const buttons = document.getElementsByClassName("button");
+const clickEvent = new Event('click');
+
+document.addEventListener("keyup", (e) => {
+    if(numericKeys.includes(e.key)){
+        parseKeyToButton(e.key);
+    }
+});
 
 for (let index = 0; index < buttons.length; index++) {
     const btn = buttons[index];
     btn.addEventListener('click', setBtnAction);
 }
 
+console.log(buttons);
+
 //#region FUNCTIONS
 
 function setBtnAction(e) {
     const type = e.target.getAttribute('data-type');
-    let value = e.target.getAttribute('data-value');
+    let value = e.target.id;
 
     switch (type){
         case 'digit': updateOutput(value); break;
         case 'operand': setOperand(value); break;
         case 'fn': setFn(value); break;
     }
+}
+
+function parseKeyToButton(key){
+    const button = Array.from(buttons).find((btn) => btn.id.includes(key));
+    if (!button) return;
+
+    button.dispatchEvent(clickEvent);
 }
 
 //#region MAIN FUNCTIONS
