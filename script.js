@@ -7,9 +7,9 @@ let operator = '';
 let secondNumber = 0;
 
 let memory = 0;
-let isDisplayingUnmodified = false;
+let isDisplayingUnmodified = true;
 
-const numericKeys = [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '+', '*', '-', '/', 'Enter', 'Backspace'];
+const numericKeys = [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '+', '*', '-', '/', 'Enter', 'Backspace'];
 const buttons = document.getElementsByClassName("button");
 const clickEvent = new Event('click');
 
@@ -23,8 +23,6 @@ for (let index = 0; index < buttons.length; index++) {
     const btn = buttons[index];
     btn.addEventListener('click', setBtnAction);
 }
-
-console.log(buttons);
 
 //#region FUNCTIONS
 
@@ -40,8 +38,18 @@ function setBtnAction(e) {
 }
 
 function parseKeyToButton(key){
-    const button = Array.from(buttons).find((btn) => btn.id.includes(key));
-    if (!button) return;
+    let button = Array.from(buttons).find((btn) => btn.id == key);
+    if (!button){
+        switch(key){
+            case '.': button = buttons['decimal']; break;
+            case '+': button = buttons['plus']; break;
+            case '*': button = buttons['times']; break;
+            case '-': button = buttons['minus']; break;
+            case '/': button = buttons['divide']; break;
+            case 'Backspace': button = buttons['backspace']; break;
+            case 'Enter': button = buttons['equals']; break;
+        }
+    }
 
     button.dispatchEvent(clickEvent);
 }
@@ -71,6 +79,7 @@ function setFn(value){
 
     switch (value) {
         case 'square-root': return fn_squareRoot();
+        case 'backspace': return fn_backspace();
         case 'decimal': return fn_decimal();
         case 'memory-plus': return fn_memoryPlus(); 
         case 'memory-minus': return fn_memoryMinus(); 
@@ -100,7 +109,6 @@ function setOperand(value){
     }
     else{
         firstNumber = currentNumber;
-        console.log(firstNumber);
     }
 
     isDisplayingUnmodified = true;
@@ -108,14 +116,16 @@ function setOperand(value){
 }
 
 function updateOutput(value){
-    if (output.textContent.length >= 10) return;
-    if (output.textContent.length == 9 && value == '00') return;
-    if (output.textContent == 0 && value == '00') return;
+    if (!isDisplayingUnmodified){
+        if (output.textContent.length >= 10) return;
+        if (output.textContent.length == 9 && value == '00') return;
+        if (output.textContent == 0 && value == '00') return;
+    }
 
     if (output.textContent == 0 || isDisplayingUnmodified){
         output.textContent = value;
 
-        if (isDisplayingUnmodified) isDisplayingUnmodified = !isDisplayingUnmodified;
+        isDisplayingUnmodified = !isDisplayingUnmodified;
     }
     else{
         output.textContent += value;
@@ -126,6 +136,37 @@ function resetValues() {
     firstNumber = 0;
     operator = '';
     memory = 0;
+}
+
+function isDecimal(num){
+    return !Number.isInteger(num);
+}
+
+function handleBigOutput(num){
+    let stringedNum = num.toString();
+    if (stringedNum.length > 10){
+        stringedNum = stringedNum.substring(0,10);
+        return stringedNum;
+    }
+    return stringedNum;
+}
+
+function handleDecimal(num){
+    num = num.toFixed(2);
+
+    const [int, dec] = num.toString().split('.');
+
+    if(int.length <= 6){
+        return num;
+    }
+
+    const digitsToRemove = int.length - 6;
+    const factor = 10 ** digitsToRemove;
+
+    const intPart = Math.floor(Number(int) / factor) * factor;
+
+
+    return Number(`${intPart}.${dec}`);
 }
 
 //#endregion MAIN FUNCTIONS
@@ -161,15 +202,27 @@ function fn_equals(){
 
     secondNumber = Number(output.textContent);
 
-    const result = operate(operator, firstNumber, secondNumber);
+    let result = Number(operate(operator, firstNumber, secondNumber));
     resetValues();
-
+    
     if (!result) return;
+    if (isDecimal(result)){
+        result = handleDecimal(result);
+    }
+    else{
+        result = handleBigOutput(result);
+    }
+
     output.textContent = result;
 }
 
 function fn_squareRoot(){
-    const sqrt = Math.sqrt(Number(output.textContent));
+    let sqrt = Math.sqrt(Number(output.textContent));
+
+    if(isDecimal(sqrt)){
+        sqrt = handleDecimal(sqrt);
+    }
+
     output.textContent = sqrt;
 }
 
@@ -177,6 +230,18 @@ function fn_decimal(){
     if (output.textContent.includes('.')) return;
 
     output.textContent += '.';
+    isDisplayingUnmodified = false;
+}
+
+function fn_backspace(){
+    if (output.textContent.length <= 1){
+        output.textContent = 0;
+        return;
+    }
+
+    let backspacedValue = output.textContent.split("").slice(0,-1).join("");
+    output.textContent = backspacedValue;
+
     isDisplayingUnmodified = false;
 }
 
