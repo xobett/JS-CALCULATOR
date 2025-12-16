@@ -95,6 +95,7 @@ function setOperand(value){
 
     if (value == 'minus' && currentNumber == 0){
         output.textContent = '-';
+        isDisplayingUnmodified = false;
         return;
     }
 
@@ -152,21 +153,12 @@ function handleBigOutput(num){
 }
 
 function handleDecimal(num){
-    num = num.toFixed(2);
+    const fixed = Number(num).toFixed(2);
+    let [int, dec] = fixed.split('.');
 
-    const [int, dec] = num.toString().split('.');
+    if (int.length <= 7) return fixed;
 
-    if(int.length <= 6){
-        return num;
-    }
-
-    const digitsToRemove = int.length - 6;
-    const factor = 10 ** digitsToRemove;
-
-    const intPart = Math.floor(Number(int) / factor) * factor;
-
-
-    return Number(`${intPart}.${dec}`);
+    return Number(`${int.slice(0,7)}.${dec}`);
 }
 
 //#endregion MAIN FUNCTIONS
@@ -205,7 +197,8 @@ function fn_equals(){
     let result = Number(operate(operator, firstNumber, secondNumber));
     resetValues();
     
-    if (!result) return;
+    if (result === null) return;
+
     if (isDecimal(result)){
         result = handleDecimal(result);
     }
